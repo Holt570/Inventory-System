@@ -107,6 +107,7 @@ static void Add_Item(string xml_path, int current_id) //adds new item to invento
 
 static void Edit_Item(string xml_path, int current_id) //allows user to edit values of an existing item
 {
+    bool invalid_id = true;
     Console.WriteLine();
 
     Console.WriteLine("Please enter the ID value of the item you would like to edit:");
@@ -116,40 +117,45 @@ static void Edit_Item(string xml_path, int current_id) //allows user to edit val
 
     foreach (XElement item in inventory_tree.Elements())
     {
-        if (item.Attribute("id").Value == selected_id)
+        if (item.Attribute("id").Value == selected_id) //checks for item with id matching user input
         {
+            invalid_id = false;
+
+	    Console.WriteLine();
             Console.WriteLine("Please enter the new item name, or enter '#' to keep current value:");
-            Console.WriteLine($"Current value: {item.Element("Name").Value}");
+            Console.WriteLine($"Current value: {item.Element("Name").Value}"); //shows current value for convenience
             string new_name = Console.ReadLine();
-            if (new_name != "#")
+            if (new_name != "#") //skips update if input is '#'
             {
-                item.SetElementValue("Name", new_name);
+                item.SetElementValue("Name", new_name); //changes element value to match new input
             }
+            Console.WriteLine();
 
             Console.WriteLine("Please enter the new item type, or enter '#' to keep current value:");
-            Console.WriteLine($"Current value: {item.Element("Type").Value}");
+            Console.WriteLine($"Current value: {item.Element("Type").Value}"); //shows current value for convenience
             string new_type = Console.ReadLine();
-            if (new_type != "#")
+            if (new_type != "#") //skips update if input is '#'
             {
-                item.SetElementValue("Type", new_type);
+                item.SetElementValue("Type", new_type); //changes element value to match new input
             }
+            Console.WriteLine();
 
             Console.WriteLine("Please enter the new item quantity, or enter '#' to keep current value:");
-            Console.WriteLine($"Current value: {item.Element("Quantity").Value}");
+            Console.WriteLine($"Current value: {item.Element("Quantity").Value}"); //shows current value for convenience
             string new_quantity = Console.ReadLine();
-            if (new_quantity != "#")
+            if (new_quantity != "#") //skips update if input is '#'
             {
                 try //checks if quantity input is a valid integer
                 {
                     int int_quantity = Convert.ToInt16(new_quantity);
-                    item.SetElementValue("Quantity", new_quantity);
+                    item.SetElementValue("Quantity", new_quantity); //changes element value to match new input
                 }
-                catch //sets quantity to 1 if input is not an integer
+                catch //does not update quantity value if input is not an integer
                 {
                     Console.WriteLine("Invalid quantity entered. Quantity will remain at current value");
-                }
-                
+                }  
             }
+            Console.WriteLine();
 
             inventory_tree.Save(xml_path); //updates xml file to match new xml tree with new item
 
@@ -158,10 +164,12 @@ static void Edit_Item(string xml_path, int current_id) //allows user to edit val
             Main_Menu(xml_path, current_id); //returns to main menu
         }
     }
-
-    Console.WriteLine();
-    Console.WriteLine("Invalid ID entered. Returning to main menu...");
-    Main_Menu(xml_path, current_id); //returns to main menu
+    if (invalid_id) //if no item id matched the user input
+    {
+        Console.WriteLine();
+        Console.WriteLine("Invalid ID entered. Returning to main menu...");
+        Main_Menu(xml_path, current_id); //returns to main menu
+    }
 }
 
 static void Delete_Item(string xml_path, int current_id) //allows user to delete an existing item
