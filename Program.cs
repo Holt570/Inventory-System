@@ -1,12 +1,10 @@
 using System.Xml.Linq;
 
 int current_id = 0;
-string inventory_path = "<xml filepath>";
+string inventory_path = "<xml filepath>"; //path to xml file that stores inventory
 
 static void Main_Menu(string xml_path, int current_id)
 {
-    string menu_input;
-
     Console.WriteLine();
     Console.WriteLine("Please enter a number to select one of the following options:");
     Console.WriteLine("1. View current inventory");
@@ -15,7 +13,7 @@ static void Main_Menu(string xml_path, int current_id)
     Console.WriteLine("4. Delete inventory item");
     Console.WriteLine("5. Exit");
 
-    menu_input = Console.ReadLine(); //gets user input for menu selection
+    string menu_input = Console.ReadLine(); //gets user input for menu selection
 
     switch (menu_input) //checks user input and calls corresponding function
     {
@@ -49,15 +47,16 @@ static void View_Inventory(string xml_path, int current_id) //displays current c
 
     XElement inventory_tree = XElement.Load(xml_path); //loads current contents of xml file into a new xml tree
 
-    foreach (XElement inventory_element in inventory_tree.Elements()) //outputs values of each inventory item element in sequence
+    foreach (XElement item in inventory_tree.Elements()) //outputs values of each inventory item element in sequence
     {
-        Console.WriteLine($"Item ID: {inventory_element.Attribute("id").Value}");
-        Console.WriteLine($"Item Name: {inventory_element.Element("Name").Value}");
-        Console.WriteLine($"Item Type: {inventory_element.Element("Type").Value}");
-        Console.WriteLine($"Quantity: {inventory_element.Element("Quantity").Value}");
+        Console.WriteLine($"Item ID: {item.Attribute("id").Value}");
+        Console.WriteLine($"Item Name: {item.Element("Name").Value}");
+        Console.WriteLine($"Item Type: {item.Element("Type").Value}");
+        Console.WriteLine($"Quantity: {item.Element("Quantity").Value}");
         Console.WriteLine();
     }
 
+    Console.WriteLine("Returning to main menu...");
     Main_Menu(xml_path, current_id); //returns to main menu
 }
 
@@ -101,7 +100,7 @@ static void Add_Item(string xml_path, int current_id) //adds new item to invento
     inventory_tree.Add(new_item); //adds newly created item element to existing xml tree
     inventory_tree.Save(xml_path); //updates xml file to match new xml tree with new item
 
-    Console.WriteLine("New item added sucessfully");
+    Console.WriteLine("New item added sucessfully. Returning to main menu...");
 
     Main_Menu(xml_path, current_id); //returns to main menu
 }
@@ -109,6 +108,59 @@ static void Add_Item(string xml_path, int current_id) //adds new item to invento
 static void Edit_Item(string xml_path, int current_id) //allows user to edit values of an existing item
 {
     Console.WriteLine();
+
+    Console.WriteLine("Please enter the ID value of the item you would like to edit:");
+    string selected_id = Console.ReadLine();
+
+    XElement inventory_tree = XElement.Load(xml_path); //loads current contents of xml file into a new xml tree
+
+    foreach (XElement item in inventory_tree.Elements())
+    {
+        if (item.Attribute("id").Value == selected_id)
+        {
+            Console.WriteLine("Please enter the new item name, or enter '#' to keep current value:");
+            Console.WriteLine($"Current value: {item.Element("Name").Value}");
+            string new_name = Console.ReadLine();
+            if (new_name != "#")
+            {
+                item.SetElementValue("Name", new_name);
+            }
+
+            Console.WriteLine("Please enter the new item type, or enter '#' to keep current value:");
+            Console.WriteLine($"Current value: {item.Element("Type").Value}");
+            string new_type = Console.ReadLine();
+            if (new_type != "#")
+            {
+                item.SetElementValue("Type", new_type);
+            }
+
+            Console.WriteLine("Please enter the new item quantity, or enter '#' to keep current value:");
+            Console.WriteLine($"Current value: {item.Element("Quantity").Value}");
+            string new_quantity = Console.ReadLine();
+            if (new_quantity != "#")
+            {
+                try //checks if quantity input is a valid integer
+                {
+                    int int_quantity = Convert.ToInt16(new_quantity);
+                    item.SetElementValue("Quantity", new_quantity);
+                }
+                catch //sets quantity to 1 if input is not an integer
+                {
+                    Console.WriteLine("Invalid quantity entered. Quantity will remain at current value");
+                }
+                
+            }
+
+            inventory_tree.Save(xml_path); //updates xml file to match new xml tree with new item
+
+            Console.WriteLine("Item updated sucessfully. Returning to main menu...");
+
+            Main_Menu(xml_path, current_id); //returns to main menu
+        }
+    }
+
+    Console.WriteLine();
+    Console.WriteLine("Invalid ID entered. Returning to main menu...");
     Main_Menu(xml_path, current_id); //returns to main menu
 }
 
