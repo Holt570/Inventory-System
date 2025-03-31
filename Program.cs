@@ -30,6 +30,7 @@ static void Main_Menu(string xml_path, int current_id)
             Delete_Item(xml_path, current_id);
             break;
         case "5":
+            Console.WriteLine();
             Console.WriteLine("Exiting program...");
             break; //ends program as no further function is called
         default:
@@ -121,7 +122,7 @@ static void Edit_Item(string xml_path, int current_id) //allows user to edit val
         {
             invalid_id = false;
 
-	    Console.WriteLine();
+            Console.WriteLine();
             Console.WriteLine("Please enter the new item name, or enter '#' to keep current value:");
             Console.WriteLine($"Current value: {item.Element("Name").Value}"); //shows current value for convenience
             string new_name = Console.ReadLine();
@@ -174,8 +175,47 @@ static void Edit_Item(string xml_path, int current_id) //allows user to edit val
 
 static void Delete_Item(string xml_path, int current_id) //allows user to delete an existing item
 {
+    bool invalid_id = true;
     Console.WriteLine();
-    Main_Menu(xml_path, current_id); //returns to main menu
+    Console.WriteLine("Please enter the ID value of the item you would like to delete:");
+
+    string selected_id = Console.ReadLine();
+
+    XElement inventory_tree = XElement.Load(xml_path); //loads current contents of xml file into a new xml tree
+
+    foreach (XElement item in inventory_tree.Elements())
+    {
+        if (item.Attribute("id").Value == selected_id) //checks for item with id matching user input
+        {
+            invalid_id = false;
+
+            Console.WriteLine();
+            Console.WriteLine($"Press 0 to confirm deletion of item '{item.Element("Name").Value}'");
+            string confirm_delete = Console.ReadLine();
+
+            if (confirm_delete == "0") //user confirms deletion by entering '0'
+            {
+                item.Remove(); //removes current item from xml tree
+                inventory_tree.Save(xml_path); //updates xml file to remove selected item
+                Console.WriteLine();
+                Console.WriteLine("Item deleted sucessfully. Returning to main menu...");
+                Main_Menu(xml_path, current_id); //returns to main menu
+            }
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine("Delete cancelled. Returning to main menu...");
+                Main_Menu(xml_path, current_id); //returns to main menu
+            }
+        }
+    }
+
+    if (invalid_id) //if no item id matched the user input
+    {
+        Console.WriteLine();
+        Console.WriteLine("Invalid ID entered. Returning to main menu...");
+        Main_Menu(xml_path, current_id); //returns to main menu
+    }
 }
 
 XElement id_check_tree = XElement.Load(inventory_path);
