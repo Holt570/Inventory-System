@@ -1,4 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <HardwareInventory>
-
+	<Item id="1">
+		<Name>hp keyboard</Name>
+		<Type>input device</Type>
+		<Quantity>6</Quantity>
+	</Item>
+	<Item id="2">
+		<Name>hp laptop</Name>
+		<Type>computer</Type>
+		<Quantity>2</Quantity>
+	</Item>
+	<Item id="3">
+		<Name>dell pc</Name>
+		<Type>computer</Type>
+		<Quantity>1</Quantity>
+	</Item>
+	<Item id="4">
+		<Name>hp mouse</Name>
+		<Type>input device</Type>
+		<Quantity>56</Quantity>
+	</Item>
+	<Item id="5">
+		<Name>sony speaker</Name>
+		<Type>output device</Type>
+		<Quantity>10</Quantity>
+	</Item>
 </HardwareInventory>
