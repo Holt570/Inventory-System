@@ -46,6 +46,18 @@ static void Main_Menu(string xml_path, int current_id)
 static void View_Inventory(string xml_path, int current_id) //displays current contents of inventory xml file
 {
     Console.WriteLine();
+
+    XElement inventory_tree = XElement.Load(xml_path); //loads current contents of xml file into a new xml tree
+
+    foreach (XElement inventory_element in inventory_tree.Elements()) //outputs values of each inventory item element in sequence
+    {
+        Console.WriteLine($"Item ID: {inventory_element.Attribute("id").Value}");
+        Console.WriteLine($"Item Name: {inventory_element.Element("Name").Value}");
+        Console.WriteLine($"Item Type: {inventory_element.Element("Type").Value}");
+        Console.WriteLine($"Quantity: {inventory_element.Element("Quantity").Value}");
+        Console.WriteLine();
+    }
+
     Main_Menu(xml_path, current_id); //returns to main menu
 }
 
@@ -54,6 +66,7 @@ static void Add_Item(string xml_path, int current_id) //adds new item to invento
     current_id++; //increments current_id by 1 to set id for new item to next available number
 
     Console.WriteLine();
+
     Console.WriteLine("Please enter the name of the new item:");
     string item_name = Console.ReadLine(); //get user input for item name
     Console.WriteLine();
